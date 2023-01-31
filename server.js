@@ -8,6 +8,8 @@ const apiRoutes = require('./routes/api.js');
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner');
 
+const db_connect = require("./db")
+
 const app = express();
 
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -23,10 +25,16 @@ app.get("/", (req, res) => {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-//For FCC testing purposes
+
 fccTestingRoutes(app);
 
-apiRoutes(app);
+db_connect(async() => {
+  console.log("Conectado a base de datos")
+  
+  apiRoutes(app);
+}).catch(err => {
+  console.log(err)
+})
 
 app.use(function (req, res, next) {
   res.status(404)
@@ -46,7 +54,7 @@ const listener = app.listen(process.env.PORT || 3000, function () {
         console.log('Tests are not valid:');
         console.error(e);
       }
-    }, 3500);
+    }, 8000);
   }
 });
 
