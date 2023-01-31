@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (app) {
+module.exports = function (app, database) {
 
   app.route('/api/issues/:project')
   
