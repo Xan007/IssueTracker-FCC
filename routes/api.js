@@ -86,10 +86,11 @@ module.exports = function (app) {
 
       try {
         delete updateQuery._id
-        await issueModel.findByIdAndUpdate(_id, updateQuery)
+        if (!await issueModel.findByIdAndUpdate(_id, updateQuery))
+          throw new Error()
 
         res.send({ result: "successfully updated", "_id": _id })
-      } catch (err) {
+      } catch {
         return res.send({ error: 'could not update', '_id': _id })
       }
 
@@ -103,8 +104,8 @@ module.exports = function (app) {
         return res.send({ error: "missing _id" })
 
       try {
-        await issueModel.findByIdAndDelete(_id)
-
+        if (!await issueModel.findByIdAndDelete(_id))
+          throw new Error()
         res.send({ result: 'successfully deleted', '_id': _id })
       } catch {
         res.send({ error: "could not delete", "_id": _id })
