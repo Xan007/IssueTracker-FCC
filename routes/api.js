@@ -20,8 +20,10 @@ const requiredFields = (propertyOfReq, fields) => {
 
 const populateFromModel = (obj) => {
   let query = {}
+  let modelFields = {...issueModel.schema.obj}
+  modelFields._id = {}
 
-  Object.keys(issueModel.schema.obj).forEach(field => {
+  Object.keys(modelFields).forEach(field => {
     if (obj[field])
       query[field] = obj[field]
   })
@@ -51,6 +53,8 @@ module.exports = function (app) {
 
       let postQuery = populateFromModel(req.body)
       postQuery.project_name = project
+      postQuery.assigned_to = postQuery.assigned_to || ""
+      postQuery.status_text = postQuery.status_text || ""
 
       let newIssue = new issueModel(postQuery)
 
@@ -71,7 +75,8 @@ module.exports = function (app) {
     .put(async function (req, res) {
       const { project } = req.params;
       const { _id } = req.body
-      const updateQuery = populateFromModel(req.body)
+      let updateQuery = populateFromModel(req.body)
+      updateQuery.updated_on = new Date().toISOString()
 
       if (!_id)
         return res.send({ error: "missing _id" })
@@ -80,7 +85,8 @@ module.exports = function (app) {
         return res.send({ error: "no update field(s) sent", "_id": _id })
 
       try {
-        await issueModel.updateOne({ _id: _id }, updateQuery)
+        delete updateQuery._id
+        await issueModel.findByIdAndUpdate(_id, updateQuery)
 
         res.send({ result: "successfully updated", "_id": _id })
       } catch (err) {
