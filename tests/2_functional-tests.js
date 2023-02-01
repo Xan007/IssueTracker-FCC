@@ -131,7 +131,7 @@ suite('Functional Tests', function () {
                 })
                 .end(function (err, res) {
                     assert.equal(res.status, 200)
-                    assert.deepEqual(res.body, { error: "no update field(s) sent", "_id": issueId })
+                    assert.deepEqual(res.body, { result: "successfully updated", "_id": issueId })
 
                     done()
                 })
