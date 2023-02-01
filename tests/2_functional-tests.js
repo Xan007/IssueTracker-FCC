@@ -29,6 +29,8 @@ suite('Functional Tests', function () {
                     assert.property(res.body, 'updated_on')
                     assert.property(res.body, '_id')
 
+                    issueId = res.body._id
+
                     done()
                 })
 
@@ -131,7 +133,7 @@ suite('Functional Tests', function () {
                 })
                 .end(function (err, res) {
                     assert.equal(res.status, 200)
-                    assert.deepEqual(res.body, { result: "successfully updated", "_id": issueId })
+                    assert.deepEqual(res.body, { error: "no update field(s) sent", "_id": issueId })
 
                     done()
                 })
